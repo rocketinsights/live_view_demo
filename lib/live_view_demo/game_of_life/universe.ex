@@ -3,9 +3,8 @@ defmodule LiveViewDemo.GameOfLife.Universe do
   require Logger
 
   @moduledoc """
-  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u1")
-  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u2")
-  LiveViewDemo.GameOfLife.Universe.generate("u1", {10, 10})
+  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u1", {5, 5})
+  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u2", {10, 10})
   LiveViewDemo.GameOfLife.Universe.tick("u1")
   """
 
@@ -13,34 +12,34 @@ defmodule LiveViewDemo.GameOfLife.Universe do
 
   ## Client
 
-  def start_link(name), do: GenServer.start_link(__MODULE__, name, name: via_tuple(name))
+  def start_link(%{name: name, dimensions: dimensions}) do
+    GenServer.start_link(
+      __MODULE__,
+      %{name: name, dimensions: dimensions},
+      name: via_tuple(name)
+    )
+  end
 
   def stop(name), do: GenServer.stop(via_tuple(name))
 
-  def generate(name, dimensions), do: GenServer.cast(via_tuple(name), {:generate, dimensions})
+  def crash(name), do: GenServer.cast(via_tuple(name), :crash)
 
   def tick(name), do: GenServer.call(via_tuple(name), :tick)
 
   ## Server
 
-  def init(name) do
+  @impl true
+  def init(%{name: name} = state) do
     LiveViewDemo.GameOfLife.Cell.Supervisor.start_link(name)
 
-    {:ok, %{name: name, dimensions: {30, 30}}}
-  end
-
-  def handle_cast({:generate, dimensions}, state) do
-    state = Map.put(state, :dimensions, dimensions)
-
-    new_generation(state)
+    each_cell(state, &LiveViewDemo.GameOfLife.Cell.Supervisor.start_child/2)
     print_universe(state)
 
-    {:noreply, state}
+    {:ok, state}
   end
 
+  @impl true
   def handle_call(:tick, _from, state) do
-    Logger.info("Tick Universe")
-
     each_cell(state, &Cell.tick/2)
 
     print_universe(state)
@@ -48,9 +47,12 @@ defmodule LiveViewDemo.GameOfLife.Universe do
     {:reply, state, state}
   end
 
-  ## Utils
+  @impl true
+  def handle_cast(:crash, _state) do
+    raise "imploding"
+  end
 
-  defp new_generation(state), do: each_cell(state, &LiveViewDemo.GameOfLife.Cell.Supervisor.start_child/2)
+  ## Utils
 
   defp print_universe(%{name: name, dimensions: {height, width}}) do
     Enum.each(0..height, fn y ->
