@@ -12,7 +12,11 @@ defmodule LiveViewDemo.GameOfLife.Cell do
     )
   end
 
-  def tick(universe_name, position), do: GenServer.call(via_tuple(universe_name, position), :tick)
+  def tick(universe_name, position) do
+    GenServer.call(via_tuple(universe_name, position), :tick)
+  end
+
+  def crash(universe_name, position), do: GenServer.cast(via_tuple(universe_name, position), :crash)
 
   def alive?(universe_name, position) do
     if exists?(universe_name, position) do
@@ -27,7 +31,9 @@ defmodule LiveViewDemo.GameOfLife.Cell do
   @impl true
   def init(state) do
     alive = Enum.random([true, false])
-    {:ok, Map.put(state, :alive, alive)}
+    state = Map.put(state, :alive, alive)
+
+    {:ok, state}
   end
 
   @impl true
@@ -40,6 +46,11 @@ defmodule LiveViewDemo.GameOfLife.Cell do
   @impl true
   def handle_call(:alive, _from, state) do
     {:reply, Map.get(state, :alive), state}
+  end
+
+  @impl true
+  def handle_cast(:crash, _state) do
+    raise "crashed"
   end
 
   ## Utils
