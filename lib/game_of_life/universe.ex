@@ -12,7 +12,7 @@ defmodule GameOfLife.Universe do
 
   ## Client
 
-  def start_link(%{name: name, dimensions: dimensions}) do
+  def start_link(%{name: name, dimensions: {_width, _height} = dimensions}) do
     GenServer.start_link(
       __MODULE__,
       %{name: name, dimensions: dimensions, generation: 0},
@@ -70,7 +70,7 @@ defmodule GameOfLife.Universe do
 
   ## Utils
 
-  defp initialize_cells(%{name: name, dimensions: {height, width}}) do
+  defp initialize_cells(%{name: name, dimensions: {width, height}}) do
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
         Task.async(fn ->
@@ -82,7 +82,7 @@ defmodule GameOfLife.Universe do
     |> Task.yield_many()
   end
 
-  defp each_cell(%{name: name, dimensions: {height, width}, generation: generation}, f) do
+  defp each_cell(%{name: name, dimensions: {width, height}, generation: generation}, f) do
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
         Task.async(fn -> f.(name, {x, y}, generation) end)
@@ -95,7 +95,7 @@ defmodule GameOfLife.Universe do
     end)
   end
 
-  defp print_universe(cells, %{name: name, generation: generation, dimensions: {height, width}}) do
+  defp print_universe(cells, %{name: name, generation: generation, dimensions: {width, height}}) do
     IO.puts("#{name} - gen #{generation}")
 
     Enum.each(0..(height - 1), fn y ->
