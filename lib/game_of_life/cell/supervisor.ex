@@ -1,7 +1,7 @@
 # lib/dynamic_supervisor_example/worker_supervisor.ex
-defmodule LiveViewDemo.GameOfLife.Cell.Supervisor do
+defmodule GameOfLife.Cell.Supervisor do
   use DynamicSupervisor
-  alias LiveViewDemo.GameOfLife.Cell
+  alias GameOfLife.Cell
 
   def start_link(universe_name), do: DynamicSupervisor.start_link(__MODULE__, [], name: via_tuple(universe_name))
 

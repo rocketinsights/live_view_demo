@@ -10,7 +10,7 @@ defmodule LiveViewDemo.Application do
     children = [
       # Start the endpoint when the application starts
       LiveViewDemoWeb.Endpoint,
-      {LiveViewDemo.GameOfLife.Universe.Supervisor, []},
+      {GameOfLife.Universe.Supervisor, []},
       {Registry, [keys: :unique, name: :gol_registry]}
     ]
 

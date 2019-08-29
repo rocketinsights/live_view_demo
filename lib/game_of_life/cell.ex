@@ -1,4 +1,4 @@
-defmodule LiveViewDemo.GameOfLife.Cell do
+defmodule GameOfLife.Cell do
   use GenServer
   require Logger
 

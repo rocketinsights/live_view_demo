@@ -1,14 +1,14 @@
-defmodule LiveViewDemo.GameOfLife.Universe do
+defmodule GameOfLife.Universe do
   use GenServer
   require Logger
 
   @moduledoc """
-  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u1", {5, 5})
-  LiveViewDemo.GameOfLife.Universe.Supervisor.start_child("u2", {10, 10})
-  LiveViewDemo.GameOfLife.Universe.tick("u1")
+  GameOfLife.Universe.Supervisor.start_child("u1", {5, 5})
+  GameOfLife.Universe.Supervisor.start_child("u2", {10, 10})
+  GameOfLife.Universe.tick("u1")
   """
 
-  alias LiveViewDemo.GameOfLife.Cell
+  alias GameOfLife.Cell
 
   ## Client
 
@@ -30,9 +30,9 @@ defmodule LiveViewDemo.GameOfLife.Universe do
 
   @impl true
   def init(%{name: name} = state) do
-    LiveViewDemo.GameOfLife.Cell.Supervisor.start_link(name)
+    GameOfLife.Cell.Supervisor.start_link(name)
 
-    each_cell(state, &LiveViewDemo.GameOfLife.Cell.Supervisor.start_child/2)
+    each_cell(state, &GameOfLife.Cell.Supervisor.start_child/2)
     print_universe(state)
 
     {:ok, state}
