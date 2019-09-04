@@ -1,11 +1,7 @@
 defmodule GameOfLifeWeb.CellView do
   use GameOfLifeWeb, :view
 
-  def render_cell(%{alive: alive}) do
-    case alive do
-      false -> content_tag(:div, nil, class: "cell dead")
-      true -> content_tag(:div, nil, class: "cell alive")
-      _ -> content_tag(:div, "-", class: "cell")
-    end
-  end
+  def render_cell(%{alive: true}), do: content_tag(:div, nil, class: "cell alive")
+  def render_cell(%{alive: false}), do: content_tag(:div, nil, class: "cell dead")
+  def render_cell(_cell), do: content_tag(:div, "-", class: "cell")
 end
