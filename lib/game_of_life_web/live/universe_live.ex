@@ -34,20 +34,15 @@ defmodule GameOfLifeWeb.UniverseLive do
       socket.assigns.dimensions
     )
 
-    {:ok, put_cells(socket)}
+    {:ok, put_cells(socket, &Universe.info/1)}
   end
 
   def handle_info(:tick, socket) do
-    Universe.tick(socket.assigns.universe)
-
-    {:noreply, put_cells(socket)}
+    {:noreply, put_cells(socket, &Universe.tick/1)}
   end
 
-  defp rand_bytes, do: :crypto.strong_rand_bytes(16)
-
-  defp put_cells(socket) do
-    cells = Universe.info(socket.assigns.universe)
-
+  defp put_cells(socket, f) do
+    cells = f.(socket.assigns.universe)
     assign(socket, cells: render_cells(cells))
   end
 
@@ -62,4 +57,6 @@ defmodule GameOfLifeWeb.UniverseLive do
       end)
     end)
   end
+
+  defp rand_bytes, do: :crypto.strong_rand_bytes(16)
 end
