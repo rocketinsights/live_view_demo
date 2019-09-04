@@ -26,7 +26,7 @@ defmodule GameOfLifeWeb.UniverseLive do
 
     socket = assign(socket,
       universe: rand_bytes(),
-      dimensions: {8, 8},
+      dimensions: {8, 8}
     )
 
     Universe.Supervisor.start_child(
