@@ -29,12 +29,7 @@ defmodule GameOfLife.Cell do
   ## Server
 
   @impl true
-  def init(state) do
-    alive = Map.get(state, :alive, Enum.random([true, false]))
-    state = state |> Map.put(:alive, alive) |> Map.put(:history, [alive])
-
-    {:ok, state}
-  end
+  def init(%{alive: alive} = state), do: {:ok, Map.put(state, :history, [alive])}
 
   @impl true
   def handle_call({:tick, generation}, _from, %{universe_name: universe_name, position: position, history: history} = state) do
