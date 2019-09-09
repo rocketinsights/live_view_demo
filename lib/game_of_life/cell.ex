@@ -4,10 +4,10 @@ defmodule GameOfLife.Cell do
 
   ## Client
 
-  def start_link(%{universe_name: universe_name, position: position}) do
+  def start_link(%{universe_name: universe_name, position: position} = state) do
     GenServer.start_link(
       __MODULE__,
-      %{universe_name: universe_name, position: position},
+      state,
       name: via_tuple(universe_name, position)
     )
   end
@@ -30,8 +30,8 @@ defmodule GameOfLife.Cell do
 
   @impl true
   def init(state) do
-    alive = Map.get(state, :active, Enum.random([true, false]))
-    state = Map.put(state, :history, [alive])
+    alive = Map.get(state, :alive, Enum.random([true, false]))
+    state = state |> Map.put(:alive, alive) |> Map.put(:history, [alive])
 
     {:ok, state}
   end
@@ -61,22 +61,27 @@ defmodule GameOfLife.Cell do
 
   ## Utils
 
-  defp cell_state(state, generation) do
-    alive_count = state |> neighbor_states(generation) |> Enum.count(& &1)
+  defp cell_state(%{alive: alive} = state, generation) do
+    live_neighbor_count = state |> neighbor_states(generation) |> Enum.count(& &1)
 
-    Enum.member?([2, 3], alive_count)
+    cell_state(%{alive: alive, live_neighbor_count: live_neighbor_count})
   end
+
+  defp cell_state(%{alive: true, live_neighbor_count: 2}), do: true
+  defp cell_state(%{alive: true, live_neighbor_count: 3}), do: true
+  defp cell_state(%{alive: false, live_neighbor_count: 3}), do: true
+  defp cell_state(_), do: false
 
   defp neighbor_states(%{universe_name: universe_name, position: {x, y}}, generation) do
     [
-      alive?(universe_name, {x - 1, y}, generation),
       alive?(universe_name, {x - 1, y - 1}, generation),
       alive?(universe_name, {x, y - 1}, generation),
       alive?(universe_name, {x + 1, y - 1}, generation),
+      alive?(universe_name, {x - 1, y}, generation),
       alive?(universe_name, {x + 1, y}, generation),
-      alive?(universe_name, {x + 1, y + 1}, generation),
+      alive?(universe_name, {x - 1, y + 1}, generation),
       alive?(universe_name, {x, y + 1}, generation),
-      alive?(universe_name, {x + 1, y}, generation)
+      alive?(universe_name, {x + 1, y + 1}, generation)
     ]
   end
 
