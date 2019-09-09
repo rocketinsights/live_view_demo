@@ -7,7 +7,5 @@ defmodule GameOfLife.Universe.Supervisor do
 
   def init(_arg), do: DynamicSupervisor.init(strategy: :one_for_one)
 
-  def start_child(name, dimensions) do
-    DynamicSupervisor.start_child(__MODULE__, {Universe, %{name: name, dimensions: dimensions}})
-  end
+  def start_child(state), do: DynamicSupervisor.start_child(__MODULE__, {Universe, state})
 end
