@@ -27,7 +27,7 @@ defmodule GameOfLifeWeb.UniverseLive do
         dimensions: Template.dimensions(template)
       )
 
-    Universe.Supervisor.start_child(%{
+    Universe.start_link(%{
       name: socket.assigns.universe,
       dimensions: socket.assigns.dimensions,
       template: socket.assigns.template

@@ -3,7 +3,7 @@ defmodule GameOfLife.Universe do
   require Logger
 
   @moduledoc """
-  GameOfLife.Universe.Supervisor.start_child("u1", {5, 5})
+  GameOfLife.Universe.start_link("u1", {5, 5})
   GameOfLife.Universe.tick("u1")
   GameOfLife.Universe.info("u1", 0)
   """
