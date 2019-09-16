@@ -81,23 +81,38 @@ defmodule GameOfLife.Universe do
 
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
-        position = {x, y}
-        alive = Enum.member?(live_cells, {x, y})
+        Task.async(fn ->
+          position = {x, y}
+          alive = Enum.member?(live_cells, {x, y})
 
-        GameOfLife.Cell.Supervisor.start_child(%{universe_name: name, position: position, alive: alive})
+          GameOfLife.Cell.Supervisor.start_child(%{universe_name: name, position: position, alive: alive})
 
-        {position, alive}
+          {position, alive}
+        end)
       end)
     end)
+    |> Task.yield_many()
+    |> Enum.map(fn {task, res} -> res || Task.shutdown(task, :brutal_kill) end)
+    |> Enum.map(fn {:ok, res} -> res end)
     |> Map.new()
   end
 
   defp each_cell(%{name: name, dimensions: {width, height}} = state, f) do
+    generation = get_generation(state)
+
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
-        {{x, y}, f.(%{universe_name: name, position: {x, y}, generation: get_generation(state)})}
+        Task.async(fn ->
+          position = {x, y}
+          result = f.(%{universe_name: name, position: position, generation: generation})
+
+          {position, result}
+        end)
       end)
     end)
+    |> Task.yield_many()
+    |> Enum.map(fn {task, res} -> res || Task.shutdown(task, :brutal_kill) end)
+    |> Enum.map(fn {:ok, res} -> res end)
     |> Map.new()
   end
 
