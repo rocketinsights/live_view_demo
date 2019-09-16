@@ -11,10 +11,12 @@ defmodule GameOfLife.Universe do
   alias GameOfLife.Cell
   alias GameOfLife.Universe.Template
   alias GameOfLife.Universe.Generation
+  alias GameOfLife.Universe.Dimensions
+  alias GameOfLife.Cell.Position
 
   ## Client
 
-  def start_link(%{name: name, template: template, dimensions: {_width, _height} = dimensions}) do
+  def start_link(%{name: name, template: template, dimensions: %Dimensions{} = dimensions}) do
     GenServer.start_link(
       __MODULE__,
       %{name: name, dimensions: dimensions, template: template},
@@ -62,10 +64,10 @@ defmodule GameOfLife.Universe do
 
   ## Utils
 
-  defp initialize_cells(%{name: name, dimensions: {width, height}, template: :random}) do
+  defp initialize_cells(%{name: name, dimensions: %Dimensions{width: width, height: height}, template: :random}) do
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
-        position = {x, y}
+        position = %Position{x: x, y: y}
         alive = Enum.random([true, false])
 
         GameOfLife.Cell.Supervisor.start_child(%{universe_name: name, position: position, alive: alive})
@@ -76,14 +78,14 @@ defmodule GameOfLife.Universe do
     |> Map.new()
   end
 
-  defp initialize_cells(%{name: name, dimensions: {width, height}, template: template}) do
+  defp initialize_cells(%{name: name, dimensions: %Dimensions{width: width, height: height}, template: template}) do
     live_cells = Template.initial_state(template)
 
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
         Task.async(fn ->
-          position = {x, y}
-          alive = Enum.member?(live_cells, {x, y})
+          position = %Position{x: x, y: y}
+          alive = Enum.member?(live_cells, position)
 
           GameOfLife.Cell.Supervisor.start_child(%{universe_name: name, position: position, alive: alive})
 
@@ -97,13 +99,13 @@ defmodule GameOfLife.Universe do
     |> Map.new()
   end
 
-  defp each_cell(%{name: name, dimensions: {width, height}} = state, f) do
+  defp each_cell(%{name: name, dimensions: %Dimensions{width: width, height: height}} = state, f) do
     generation = get_generation(state)
 
     Enum.flat_map(0..(height - 1), fn y ->
       Enum.map(0..(width - 1), fn x ->
         Task.async(fn ->
-          position = {x, y}
+          position = %Position{x: x, y: y}
           result = f.(%{universe_name: name, position: position, generation: generation})
 
           {position, result}
