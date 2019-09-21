@@ -10,9 +10,9 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   def mount(_session, socket) do
-    socket = assign(socket, universe: rand_bytes(), speed: 10, playing: true)
+    socket = set_universe(socket)
 
-    socket = assign(socket, template: :random, dimensions: %Dimensions{width: 16, height: 16})
+    socket = assign(socket, template: :random, dimensions: %Dimensions{width: 32, height: 32})
     # socket = assign(socket, template: :beacon, dimensions: Template.dimensions(:beacon))
     # socket = assign(socket, template: :pulsar, dimensions: Template.dimensions(:pulsar))
 
@@ -37,13 +37,15 @@ defmodule GameOfLifeWeb.UniverseLive do
     {:noreply, toggle_playing(socket)}
   end
 
+  def handle_event("reset", _params, socket) do
+    {:noreply, reset_universe(socket)}
+  end
+
   defp put_generation(socket, f) do
     socket
     |> assign(generation: f.(socket.assigns.universe))
     |> schedule_tick()
   end
-
-  defp rand_bytes, do: :crypto.strong_rand_bytes(16)
 
   defp schedule_tick(socket) do
     if connected?(socket) and socket.assigns.playing do
@@ -59,5 +61,25 @@ defmodule GameOfLifeWeb.UniverseLive do
       |> schedule_tick()
 
     socket
+  end
+
+  defp reset_universe(socket) do
+    Universe.stop(socket.assigns.universe)
+
+    socket = set_universe(socket)
+
+    Universe.start_link(%{
+      name: socket.assigns.universe,
+      dimensions: socket.assigns.dimensions,
+      template: socket.assigns.template
+    })
+
+    put_generation(socket, &Universe.info/1)
+  end
+
+  defp rand_bytes, do: :crypto.strong_rand_bytes(16)
+
+  defp set_universe(socket) do
+    assign(socket, universe: rand_bytes(), speed: 10, playing: true)
   end
 end
