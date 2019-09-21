@@ -23,6 +23,10 @@
     <p class="help-text">Current speed: <%= @speed %>fps</p>
   <% end %>
 
+  <%= form_tag "#", phx_submit: "toggle_playing" do %>
+    <%= submit if @playing, do: "Pause", else: "Play" %>
+  <% end %>
+
   <div>
     <p class="fancy">Powered by</p>
     <a href="https://phoenixframework.org" target="_blank">
