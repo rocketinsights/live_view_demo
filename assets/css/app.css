@@ -101,6 +101,11 @@ div[data-phx-view="GameOfLifeWeb.UniverseLive"] {
     background: rgb(50, 50, 50);
 }
 
+.form-group {
+    display: flex;
+    justify-content: space-around;
+}
+
 .form-input {
     margin: 0;
 }
@@ -125,7 +130,6 @@ div[data-phx-view="GameOfLifeWeb.UniverseLive"] {
     color: #EF4734;
     cursor: pointer;
     font-size: 18px;
-    /*box-shadow: 0;*/
     padding: 5px 10px;
     transition: transform 0.025s;
 }
