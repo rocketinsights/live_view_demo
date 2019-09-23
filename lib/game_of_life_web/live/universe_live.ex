@@ -36,7 +36,7 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   defp set_template(socket, template) do
-    load_universe(socket, %{:template => template, :dimensions => Template.dimensions(template)})
+    load_universe(socket, %{template: template, dimensions: Template.dimensions(template)})
   end
 
   defp tick(socket) do
