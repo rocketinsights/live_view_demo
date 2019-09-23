@@ -5,33 +5,24 @@ defmodule GameOfLifeWeb.UniverseLive do
   alias GameOfLife.Universe.Template
   alias GameOfLife.Universe.Dimensions
 
-  def render(assigns) do
-    GameOfLifeWeb.UniverseView.render("show.html", assigns)
-  end
+  def render(assigns), do: GameOfLifeWeb.UniverseView.render("show.html", assigns)
 
   def mount(_session, socket) do
-    socket =
-      socket
-      |> set_universe()
-      |> assign(speed: 10, playing: true)
-      # |> assign(template: :random, dimensions: %Dimensions{width: 32, height: 32})
-      # |> assign(template: :beacon, dimensions: Template.dimensions(:beacon))
-      |> assign(template: :pulsar, dimensions: Template.dimensions(:pulsar))
+    # {:ok, load_universe(socket, %{template: :beacon, dimensions: Template.dimensions(:beacon)})}
+    # {:ok, load_universe(socket, %{template: :pulsar, dimensions: Template.dimensions(:pulsar)})}
 
-    Universe.start_link(%{
-      name: socket.assigns.universe,
-      dimensions: socket.assigns.dimensions,
-      template: socket.assigns.template
-    })
-
-    {:ok, put_generation(socket, &Universe.info/1)}
+    {:ok, load_universe(socket)}
   end
 
-  def handle_info(:tick, socket) do 
-    {:noreply, put_generation(socket, &Universe.tick/1)}
+  def handle_info(:tick, socket) do
+    if socket.assigns.playing do
+      {:noreply, put_generation(socket, &Universe.tick/1)}
+    else
+      {:noreply, socket}
+    end
   end
 
-  def handle_event("update_speed", %{"universe" => %{ "speed" => speed }}, socket) do
+  def handle_event("update_speed", %{"universe" => %{"speed" => speed}}, socket) do
     {:noreply, assign(socket, speed: String.to_integer(speed))}
   end
 
@@ -45,51 +36,61 @@ defmodule GameOfLifeWeb.UniverseLive do
 
   defp put_generation(socket, f) do
     socket
-    |> assign(generation: f.(socket.assigns.universe))
+    |> assign(generation: f.(socket.assigns.universe_name))
     |> schedule_tick()
   end
 
   defp schedule_tick(socket) do
-    cond do
-      connected?(socket) and socket.assigns.playing ->
-        delay = trunc(1000 / socket.assigns.speed)
-        assign(socket, timer: Process.send_after(self(), :tick, delay))
-
-        true ->
-          socket
-    end
-  end
-
-  defp toggle_playing(socket) do
-    socket =
-      socket
-      |> assign(playing: !socket.assigns.playing)
-      |> schedule_tick()
+    Process.send_after(self(), :tick, trunc(1000 / socket.assigns.speed))
 
     socket
   end
 
+  defp toggle_playing(socket) do
+    socket
+    |> assign(playing: !socket.assigns.playing)
+    |> schedule_tick()
+  end
+
   defp reset_universe(socket) do
-    Universe.stop(socket.assigns.universe)
+    Universe.stop(socket.assigns.universe_name)
 
-    if socket.assigns.timer do
-      Process.cancel_timer(socket.assigns.timer)
-    end
+    load_universe(socket, %{
+      universe_name: socket.assigns.universe_name,
+      speed: socket.assigns.speed,
+      playing: false,
+      template: socket.assigns.template,
+      dimensions: socket.assigns.dimensions
+    })
+  end
 
-    socket = set_universe(socket)
+  defp load_universe(socket, opts \\ %{}) do
+    socket
+    |> setup_universe(opts)
+    |> start_universe()
+    |> put_generation(&Universe.info/1)
+  end
 
+  defp setup_universe(socket, opts) do
+    assign(
+      socket,
+      universe_name: Map.get(opts, :name, rand_bytes()),
+      speed: Map.get(opts, :speed, 5),
+      playing: Map.get(opts, :playing, false),
+      template: Map.get(opts, :template, :random),
+      dimensions: Map.get(opts, :dimensions, %Dimensions{width: 16, height: 16})
+    )
+  end
+
+  defp start_universe(socket) do
     Universe.start_link(%{
-      name: socket.assigns.universe,
+      name: socket.assigns.universe_name,
       dimensions: socket.assigns.dimensions,
       template: socket.assigns.template
     })
 
-    put_generation(socket, &Universe.info/1)
+    socket
   end
 
   defp rand_bytes, do: :crypto.strong_rand_bytes(16)
-
-  defp set_universe(socket) do
-    assign(socket, universe: rand_bytes(), timer: nil)
-  end
 end
