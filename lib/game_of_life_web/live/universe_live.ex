@@ -32,7 +32,7 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   def handle_event("set_template", %{"universe" => %{ "template" => template }}, socket) do
-    {:noreply, set_template(socket, String.to_atom(template))}
+    {:noreply, set_template(socket, template)}
   end
 
   defp set_template(socket, template) do
@@ -77,8 +77,8 @@ defmodule GameOfLifeWeb.UniverseLive do
       socket,
       playing: Map.get(opts, :playing, false),
       speed: Map.get(opts, :speed, 5),
-      template: Map.get(opts, :template, :random),
-      dimensions: Map.get(opts, :dimensions, Template.dimensions(:random))
+      template: Map.get(opts, :template, "random"),
+      dimensions: Map.get(opts, :dimensions, Template.dimensions("random"))
     )
   end
 
