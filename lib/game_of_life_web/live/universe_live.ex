@@ -16,7 +16,7 @@ defmodule GameOfLifeWeb.UniverseLive do
 
   def handle_info(:tick, socket) do
     if socket.assigns.playing do
-      {:noreply, put_generation(socket, &Universe.tick/1)}
+      {:noreply, tick(socket)}
     else
       {:noreply, socket}
     end
@@ -34,9 +34,9 @@ defmodule GameOfLifeWeb.UniverseLive do
     {:noreply, reset_universe(socket)}
   end
 
-  defp put_generation(socket, f) do
+  defp tick(socket) do
     socket
-    |> assign(generation: f.(socket.assigns.universe_name))
+    |> assign(universe: Universe.tick(socket.assigns.universe))
     |> schedule_tick()
   end
 
@@ -53,12 +53,9 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   defp reset_universe(socket) do
-    Universe.stop(socket.assigns.universe_name)
-
     load_universe(socket, %{
-      universe_name: socket.assigns.universe_name,
-      speed: socket.assigns.speed,
       playing: false,
+      speed: socket.assigns.speed,
       template: socket.assigns.template,
       dimensions: socket.assigns.dimensions
     })
@@ -68,29 +65,21 @@ defmodule GameOfLifeWeb.UniverseLive do
     socket
     |> setup_universe(opts)
     |> start_universe()
-    |> put_generation(&Universe.info/1)
   end
 
   defp setup_universe(socket, opts) do
     assign(
       socket,
-      universe_name: Map.get(opts, :name, rand_bytes()),
-      speed: Map.get(opts, :speed, 5),
       playing: Map.get(opts, :playing, false),
+      speed: Map.get(opts, :speed, 5),
       template: Map.get(opts, :template, :random),
-      dimensions: Map.get(opts, :dimensions, %Dimensions{width: 16, height: 16})
+      dimensions: Map.get(opts, :dimensions, %Dimensions{width: 80, height: 80})
     )
   end
 
   defp start_universe(socket) do
-    Universe.start_link(%{
-      name: socket.assigns.universe_name,
-      dimensions: socket.assigns.dimensions,
-      template: socket.assigns.template
-    })
+    universe = Universe.init(socket.assigns.template, socket.assigns.dimensions)
 
-    socket
+    assign(socket, :universe, universe)
   end
-
-  defp rand_bytes, do: :crypto.strong_rand_bytes(16)
 end
