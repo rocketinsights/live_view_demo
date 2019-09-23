@@ -73,7 +73,7 @@ defmodule GameOfLifeWeb.UniverseLive do
       playing: Map.get(opts, :playing, false),
       speed: Map.get(opts, :speed, 5),
       template: Map.get(opts, :template, :random),
-      dimensions: Map.get(opts, :dimensions, %Dimensions{width: 80, height: 80})
+      dimensions: Map.get(opts, :dimensions, %Dimensions{width: 32, height: 32})
     )
   end
 
