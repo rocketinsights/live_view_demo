@@ -3,6 +3,7 @@ defmodule GameOfLife.Universe.Template do
   alias GameOfLife.Universe.Dimensions
   alias GameOfLife.Cell.Position
 
+  def dimensions(:random), do: %Dimensions{width: 16, height: 16}
   def dimensions(:beacon), do: %Dimensions{width: 6, height: 6}
   def dimensions(:pulsar), do: %Dimensions{width: 17, height: 17}
   def dimensions(:penta_decathlon), do: %Dimensions{width: 11, height: 18}
