@@ -1,6 +1,7 @@
 defmodule GameOfLifeWeb.UniverseView do
   use GameOfLifeWeb, :view
 
+  alias GameOfLife.Color
   alias GameOfLife.Universe
   alias GameOfLife.Universe.Generation
   alias GameOfLife.Universe.Dimensions
@@ -19,6 +20,10 @@ defmodule GameOfLifeWeb.UniverseView do
         end
       end)
     end
+  end
+
+  def render_color_rgb(%Color{} = color) do
+    "rgb(" <> color.red <> "," <> color.green <> "," <> color.blue <> ")"
   end
 
   def template_names(), do: Template.names()
