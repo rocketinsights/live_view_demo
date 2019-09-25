@@ -157,6 +157,12 @@ div[data-phx-view="GameOfLifeWeb.UniverseLive"] {
     transition: transform 0.025s;
 }
 
+a {
+    &.button {
+        text-decoration: none;
+    }
+}
+
 .button:hover, .button:active {
     transform: scale(1.15);
     transition: transform 0.025s;
