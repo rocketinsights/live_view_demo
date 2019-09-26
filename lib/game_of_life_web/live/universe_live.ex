@@ -4,6 +4,7 @@ defmodule GameOfLifeWeb.UniverseLive do
   alias GameOfLife.Color
   alias GameOfLife.Universe
   alias GameOfLife.Universe.Template
+  alias GameOfLife.Universe.Dimensions
 
   def render(assigns), do: GameOfLifeWeb.UniverseView.render("show.html", assigns)
 
@@ -24,11 +25,7 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   def handle_event("update_color", %{"color" => color}, socket) do
-    color = %Color{ socket.assigns.color |
-      red: color["red"],
-      green: color["green"],
-      blue: color["blue"]
-    }
+    color = %Color{socket.assigns.color | red: color["red"], green: color["green"], blue: color["blue"]}
 
     {:noreply, assign(socket, color: color)}
   end
@@ -56,7 +53,9 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   defp schedule_tick(socket) do
-    Process.send_after(self(), :tick, trunc(1000 / socket.assigns.speed))
+    if socket.assigns.playing do
+      Process.send_after(self(), :tick, trunc(1000 / socket.assigns.speed))
+    end
 
     socket
   end
@@ -73,7 +72,7 @@ defmodule GameOfLifeWeb.UniverseLive do
       speed: socket.assigns.speed,
       template: socket.assigns.template,
       dimensions: socket.assigns.dimensions,
-      color: socket.assigns.color,
+      color: socket.assigns.color
     })
   end
 
@@ -81,22 +80,7 @@ defmodule GameOfLifeWeb.UniverseLive do
     socket
     |> setup_universe(opts)
     |> start_universe()
-  end
-
-  defp setup_universe(socket, opts) do
-    template = Map.get(opts, "template", "random")
-    speed = opts |> Map.get("speed", "5") |> String.to_integer()
-    color = Map.get(opts, :color, %Color{red: "255", green: "68", blue: "0"})
-    playing = Map.get(opts, "playing", false)
-
-    assign(
-      socket,
-      color: color,
-      playing: playing,
-      speed: speed,
-      template: template,
-      dimensions: Template.dimensions(template)
-    )
+    |> schedule_tick()
   end
 
   defp start_universe(socket) do
@@ -104,4 +88,34 @@ defmodule GameOfLifeWeb.UniverseLive do
 
     assign(socket, :universe, universe)
   end
+
+  defp setup_universe(socket, opts) do
+    template = template(opts)
+
+    assign(
+      socket,
+      color: color(opts),
+      playing: playing(opts),
+      speed: speed(opts),
+      template: template,
+      dimensions: dimensions(template, opts)
+    )
+  end
+
+  defp template(%{"template" => template}), do: template
+  defp template(_opts), do: "random"
+
+  defp speed(%{"speed" => speed}) when is_bitstring(speed), do: String.to_integer(speed)
+  defp speed(%{"speed" => speed}), do: speed
+  defp speed(_opts), do: 5
+
+  defp playing(%{"playing" => "1"}), do: true
+  defp playing(%{"playing" => 1}), do: true
+  defp playing(_opts), do: false
+
+  defp color(%{"color" => %{"red" => red, "green" => green, "blue" => blue}}), do: %Color{red: red, green: green, blue: blue}
+  defp color(_opts), do: %Color{red: "255", green: "68", blue: "0"}
+
+  defp dimensions("random", %{"width" => width, "height" => height}) when is_bitstring(width), do: %Dimensions{width: String.to_integer(width), height: String.to_integer(height)}
+  defp dimensions(template, _opts), do: Template.dimensions(template)
 end
