@@ -21,6 +21,11 @@ body {
     font-family: sans-serif;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Chau Philomene One', sans-serif;
+    margin-bottom: 5px;
+}
+
 main {
     flex: 1;
 }
@@ -125,15 +130,7 @@ div[data-phx-view="GameOfLifeWeb.UniverseLive"] {
     justify-content: space-around;
 }
 
-.form-input {
-    margin: 0;
-}
-
-.form-label {
-    margin: 0;
-}
-
-.form-control.slider {
+.slider {
     margin: 0 10px;
 }
 

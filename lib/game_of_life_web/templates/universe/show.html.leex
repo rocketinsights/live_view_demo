@@ -14,54 +14,73 @@
       <span class="title-word life">life</span>
   </div>
 
-  <%= form_tag "#", phx_change: "update_color" do %>
-    <div class="form-group">
-        <%= range_input :color, :red,
-          class: "form-input slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.red %>
 
-    </div>
-    <div class="form-group">
-        <%= range_input :color, :green,
-          class: "form-input slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.green %>
-    </div>
-    <div class="form-group">
-        <%= range_input :color, :blue,
-          class: "form-input slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.blue %>
-    </div>
-  <% end %>
+  <div class="form-group">
+    <%= form_tag "#", phx_change: "update_color" do %>
+      <h2>Live cell color</h2>
+
+      <div>
+          <%= label :color, :red, "R", class: "form-label inline middle" %>
+
+          <%= range_input :color, :red,
+            class: "form-input slider middle",
+            min: "0", max: "255", step: "5",
+            value: @color.red %>
+
+          <%= label :color, :red, @color.red, class: "form-label inline middle" %>
+      </div>
+
+      <div>
+          <%= label :color, :green, "G", class: "form-label inline middle" %>
+
+          <%= range_input :color, :green,
+            class: "form-input slider middle",
+            min: "0", max: "255", step: "5",
+            value: @color.green %>
+
+          <%= label :color, :green, @color.green, class: "form-label inline middle" %>
+      </div>
+
+      <div>
+          <%= label :color, :blue, "B", class: "form-label inline middle" %>
+
+          <%= range_input :color, :blue,
+            class: "form-input slider middle",
+            min: "0", max: "255", step: "5",
+            value: @color.blue %>
+
+          <%= label :color, :blue, @color.blue, class: "form-label inline middle" %>
+      </div>
+    <% end %>
+  </div>
+
 
   <div class="form-group">
     <%= form_tag "#", phx_change: "update_speed" do %>
-      <div class="form-control">
-        <%= label class: "form-label inline middle" do %>1<% end %>
+      <h2>Speed</h2>
+
+      <div >
+        <%= label class: "inline middle" do %>1<% end %>
 
         <%= range_input :universe, :speed,
-          class: "form-input slider middle",
+          class: "slider middle",
           min: "1", max: "20", step: "1",
           value: @speed %>
 
-        <%= label class: "form-label inline middle" do %>20<% end %>
+        <%= label class: "inline middle" do %>20<% end %>
       </div>
 
       <p class="help-text">Current speed: <%= @speed %></p>
     <% end %>
   </div>
 
-  <%= form_tag "#", phx_change: "set_template" do %>
-    <div class="form-control">
-      <%= label class: "form-label inline middle" do %>Select Template: <% end %>
+  <div class="form-group">
+    <%= form_tag "#", phx_change: "set_template" do %>
+      <h2>Template</h2>
 
       <%= select :universe, :template, template_names() %>
-    </div>
-
-    <p class="help-text">Current template: <%= @template %></p>
-  <% end %>
+    <% end %>
+  </div>
 
   <div class="form-group">
     <%= form_tag "#", class: "inline", phx_submit: "toggle_playing" do %>
