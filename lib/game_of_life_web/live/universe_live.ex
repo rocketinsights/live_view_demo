@@ -24,10 +24,8 @@ defmodule GameOfLifeWeb.UniverseLive do
     {:noreply, assign(socket, speed: String.to_integer(speed))}
   end
 
-  def handle_event("update_color", %{"color" => color}, socket) do
-    color = %Color{socket.assigns.color | red: color["red"], green: color["green"], blue: color["blue"]}
-
-    {:noreply, assign(socket, color: color)}
+  def handle_event("update_color", %{"color" => %{"red" => red, "green" => green, "blue" => blue}}, socket) do
+    {:noreply, assign(socket, color: %Color{red: red, green: green, blue: blue})}
   end
 
   def handle_event("toggle_playing", _params, socket) do
