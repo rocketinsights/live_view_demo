@@ -22,10 +22,6 @@ defmodule GameOfLifeWeb.UniverseView do
     end
   end
 
-  def render_color_rgb(%Color{} = color) do
-    "rgb(" <> color.red <> "," <> color.green <> "," <> color.blue <> ")"
-  end
-
   def template_names(), do: Template.names()
 
   defp universe_class(%Dimensions{width: width, height: height}) when width > 200 or height > 200, do: "universe xxl"

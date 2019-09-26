@@ -1,10 +1,10 @@
+<!-- Wrapped in div[data-phx-view="GameOfLifeWeb.UniverseLive"] -->
 <style>
 .cell.alive {
-  background: <%= render_color_rgb(@color) %>;
+  background: <%= Color.rgb_string(@color) %>;
 }
 </style>
 
-<!-- Wrapped in div[data-phx-view="GameOfLifeWeb.UniverseLive"] -->
 <section class="universe-sidebar">
   <div class="sidebar-title-wrapper">
     <img class="flame-of-life-logo" src="/images/logo.gif" alt="Game of Life Logo"/>
@@ -14,44 +14,11 @@
       <span class="title-word life">life</span>
   </div>
 
+  <%= form_tag "#", phx_change: "set_template" do %>
+    <h2>Template</h2>
 
-  <%= form_tag "#", phx_change: "update_color" do %>
-    <h2>Live cell color</h2>
-
-    <div>
-        <%= label :color, :red, "R", class: "inline middle" %>
-
-        <%= range_input :color, :red,
-          class: "slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.red %>
-
-        <%= label :color, :red, @color.red, class: "inline middle" %>
-    </div>
-
-    <div>
-        <%= label :color, :green, "G", class: "inline middle" %>
-
-        <%= range_input :color, :green,
-          class: "slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.green %>
-
-        <%= label :color, :green, @color.green, class: "inline middle" %>
-    </div>
-
-    <div>
-        <%= label :color, :blue, "B", class: "inline middle" %>
-
-        <%= range_input :color, :blue,
-          class: "slider middle",
-          min: "0", max: "255", step: "5",
-          value: @color.blue %>
-
-        <%= label :color, :blue, @color.blue, class: "inline middle" %>
-    </div>
+    <%= select :universe, :template, template_names() %>
   <% end %>
-
 
   <%= form_tag "#", phx_change: "update_speed" do %>
     <h2>Speed</h2>
@@ -66,10 +33,39 @@
     </div>
   <% end %>
 
-  <%= form_tag "#", phx_change: "set_template" do %>
-    <h2>Template</h2>
+  <%= form_tag "#", phx_change: "update_color" do %>
+    <h2>Cell Color</h2>
 
-    <%= select :universe, :template, template_names() %>
+    <div>
+        <%= label :color, :red, "R", class: "inline middle" %>
+
+        <%= range_input :color, :red,
+          class: "slider middle",
+          min: "0", max: "255", step: "5",
+          value: @color.red %>
+
+        <%= label :color, :red, @color.red, class: "inline middle" %>
+    </div>
+    <div>
+        <%= label :color, :green, "G", class: "inline middle" %>
+
+        <%= range_input :color, :green,
+          class: "slider middle",
+          min: "0", max: "255", step: "5",
+          value: @color.green %>
+
+        <%= label :color, :green, @color.green, class: "inline middle" %>
+    </div>
+    <div>
+        <%= label :color, :blue, "B", class: "inline middle" %>
+
+        <%= range_input :color, :blue,
+          class: "slider middle",
+          min: "0", max: "255", step: "5",
+          value: @color.blue %>
+
+        <%= label :color, :blue, @color.blue, class: "inline middle" %>
+    </div>
   <% end %>
 
   <div>
