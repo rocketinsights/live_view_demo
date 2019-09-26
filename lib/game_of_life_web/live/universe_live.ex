@@ -78,13 +78,14 @@ defmodule GameOfLifeWeb.UniverseLive do
     socket
     |> setup_universe(opts)
     |> start_universe()
-    |> schedule_tick()
   end
 
   defp start_universe(socket) do
     universe = Universe.init(socket.assigns.template, socket.assigns.dimensions)
 
-    assign(socket, :universe, universe)
+    socket
+    |> assign(:universe, universe)
+    |> schedule_tick()
   end
 
   defp setup_universe(socket, opts) do
