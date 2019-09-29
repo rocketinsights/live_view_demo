@@ -135,8 +135,8 @@ defmodule GameOfLifeWeb.UniverseLive do
   defp playing(%{"playing" => 1}), do: true
   defp playing(_opts), do: false
 
-  defp party(%{"playing" => "1"}), do: true
-  defp party(%{"playing" => 1}), do: true
+  defp party(%{"party" => "1"}), do: true
+  defp party(%{"party" => 1}), do: true
   defp party(_opts), do: false
 
   defp color(%{"color" => color}), do: color
