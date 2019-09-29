@@ -1,7 +1,6 @@
 defmodule GameOfLifeWeb.UniverseView do
   use GameOfLifeWeb, :view
 
-  alias GameOfLife.Color
   alias GameOfLife.Universe
   alias GameOfLife.Universe.Generation
   alias GameOfLife.Universe.Dimensions
@@ -24,6 +23,9 @@ defmodule GameOfLifeWeb.UniverseView do
 
   def play_text(false), do: "Play"
   def play_text(true), do: "Pause"
+
+  def logo_path(true), do: "/images/logo.gif"
+  def logo_path(false), do: "/images/logo.png"
 
   def template_names(), do: Template.names()
 
