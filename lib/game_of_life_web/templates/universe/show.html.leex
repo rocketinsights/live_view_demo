@@ -46,10 +46,6 @@
     </h5>
   <% end %>
 
-  <%= if @party do %>
-    <%= content_tag(:audio, nil, src: Routes.static_path(GameOfLifeWeb.Endpoint, "/audio/party_hard.mp3"), autoplay: true) %>
-  <% end %>
-
   <div>
     <div class="fancy">Powered by</div>
     <a href="https://phoenixframework.org" target="_blank">
