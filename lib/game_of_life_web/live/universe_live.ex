@@ -78,7 +78,7 @@ defmodule GameOfLifeWeb.UniverseLive do
   end
 
   defp start_the_party(socket) do
-    socket = assign(socket, :speed, 20)
+    socket = assign(socket, :speed, 15)
 
     if socket.assigns.playing, do: socket, else: toggle_playing(socket)
   end
@@ -161,8 +161,8 @@ defmodule GameOfLifeWeb.UniverseLive do
 
   defp dimensions("random", %{"width" => width, "height" => height}) do
     %Dimensions{
-      width: Enum.min([width, 200]),
-      height: Enum.min([height, 200])
+      width: Enum.min([width, 150]),
+      height: Enum.min([height, 150])
     }
   end
 

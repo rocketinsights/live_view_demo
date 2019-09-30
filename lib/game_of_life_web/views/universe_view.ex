@@ -33,7 +33,6 @@ defmodule GameOfLifeWeb.UniverseView do
     "universe #{dimension_class(dimensions)}" |> playing?(playing) |> party?(party)
   end
 
-  defp dimension_class(%Dimensions{width: width, height: height}) when width > 200 or height > 200, do: "xxl"
   defp dimension_class(%Dimensions{width: width, height: height}) when width > 125 or height > 125, do: "xl"
   defp dimension_class(%Dimensions{width: width, height: height}) when width > 75 or height > 75, do: "lg"
   defp dimension_class(%Dimensions{width: width, height: height}) when width < 15 or height < 15, do: "sm"
