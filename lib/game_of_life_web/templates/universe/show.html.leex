@@ -21,7 +21,7 @@
         disabled: @template != "random",
         value: @dimensions.width,
         min: 1,
-        max: 200
+        max: 150
         %>
 
       <%= label :universe, :height, "height: " %>
@@ -30,7 +30,7 @@
         disabled: @template != "random",
         value: @dimensions.height,
         min: 1,
-        max: 200
+        max: 150
         %>
     </div>
   <% end %>
@@ -41,7 +41,7 @@
     <div>
       <%= range_input :universe, :speed,
         class: "slider middle",
-        min: "1", max: "20", step: "1",
+        min: "1", max: "15", step: "1",
         value: @speed %>
 
       <%= label :universe, :speed, @speed, class: "inline middle" %>
