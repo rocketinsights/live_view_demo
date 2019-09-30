@@ -15,7 +15,7 @@
       <%= select :universe, :template, template_names(), selected: @template %>
     </div>
     <div>
-      <%= label :universe, :width, "X: " %>
+      <%= label :universe, :width, "width: " %>
       <%= number_input :universe, :width,
         class: "dimension",
         disabled: @template != "random",
@@ -24,7 +24,7 @@
         max: 200
         %>
 
-      <%= label :universe, :height, "Y: " %>
+      <%= label :universe, :height, "height: " %>
       <%= number_input :universe, :height,
         class: "dimension",
         disabled: @template != "random",
